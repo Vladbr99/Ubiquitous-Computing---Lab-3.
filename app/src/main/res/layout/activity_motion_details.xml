@@ -7,4 +7,19 @@
     android:layout_height="match_parent"
     tools:context=".MotionDetails">
 
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="409dp"
+        android:layout_height="510dp"
+        tools:layout_editor_absoluteX="1dp"
+        tools:layout_editor_absoluteY="76dp">
+
+        <TextView
+            android:id="@+id/MotionDetailsText"
+            android:layout_width="381dp"
+            android:layout_height="71dp"
+            android:text="Motion details will appear here"
+            android:textSize="24sp"
+            tools:layout_editor_absoluteX="16dp"
+            tools:layout_editor_absoluteY="79dp" />
+    </androidx.constraintlayout.widget.ConstraintLayout>
 </androidx.constraintlayout.widget.ConstraintLayout>
