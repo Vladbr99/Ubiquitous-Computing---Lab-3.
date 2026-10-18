@@ -25,8 +25,12 @@
         <service
             android:name=".MyServiceMotion"
             android:enabled="true"
-            android:exported="false">
-        </service>
+            android:exported="false"></service>
+
+        <activity
+            android:name=".MotionDetails"
+            android:exported="false"
+            android:windowSoftInputMode="adjustResize" />
     </application>
 
 </manifest>
