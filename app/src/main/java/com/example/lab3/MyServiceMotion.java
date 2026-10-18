@@ -8,6 +8,21 @@ import android.util.Log;
 public class MyServiceMotion extends Service {
     public MyServiceMotion() {
     }
+
+    @Override
+    public void onCreate() {
+        super.onCreate();
+
+        Thread backgroundThread = new Thread(new Runnable() {
+            @Override
+            public void run() {
+                Log.d("MyServiceMotion", "Background thread started");
+            }
+        });
+
+        backgroundThread.start();
+    }
+
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
         Log.d("MyServiceMotion", "Motion service started");
