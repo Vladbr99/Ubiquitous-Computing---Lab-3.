@@ -6,10 +6,15 @@ import android.os.IBinder;
 import android.util.Log;
 import android.hardware.Sensor;
 import android.hardware.SensorManager;
+import android.hardware.SensorEvent;
+import android.hardware.SensorEventListener;
+import android.os.Handler;
+import android.os.HandlerThread;
 
-public class MyServiceMotion extends Service {
+public class MyServiceMotion extends Service implements SensorEventListener {
     private SensorManager mSensorManager;
     private Sensor mSensor;
+    private HandlerThread sensorThread;
     public MyServiceMotion() {
     }
 
@@ -22,18 +27,46 @@ public class MyServiceMotion extends Service {
 
         if (mSensor != null) {
             Log.d("MyServiceMotion", "Accelerometer found");
+            sensorThread = new HandlerThread("MotionSensorThread");
+            sensorThread.start();
+
+            Handler sensorHandler = new Handler(sensorThread.getLooper());
+
+            mSensorManager.registerListener(
+                    this,
+                    mSensor,
+                    SensorManager.SENSOR_DELAY_NORMAL,
+                    sensorHandler
+            );
         } else {
             Log.d("MyServiceMotion", "No accelerometer available");
         }
+    }
 
-        Thread backgroundThread = new Thread(new Runnable() {
-            @Override
-            public void run() {
-                Log.d("MyServiceMotion", "Background thread started");
-            }
-        });
+    @Override
+    public void onSensorChanged(SensorEvent event) {
+        float x = event.values[0];
+        float y = event.values[1];
+        float z = event.values[2];
 
-        backgroundThread.start();
+        Log.d("MyServiceMotion","X: " + x + " Y: " + y + " Z: " + z
+                + " Thread: " + Thread.currentThread().getName());
+    }
+
+    @Override
+    public void onAccuracyChanged(Sensor sensor, int accuracy) {
+        // No action needed for this lab.
+    }
+
+    @Override
+    public void onDestroy() {
+        mSensorManager.unregisterListener(this);
+
+        if (sensorThread != null) {
+            sensorThread.quitSafely();
+        }
+
+        super.onDestroy();
     }
 
     @Override
