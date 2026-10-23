@@ -15,6 +15,11 @@ public class MyServiceMotion extends Service implements SensorEventListener {
     private SensorManager mSensorManager;
     private Sensor mSensor;
     private HandlerThread sensorThread;
+    private float previousX, previousY, previousZ;
+    private boolean firstReading = true;
+    private long lastMotionTime = 0;
+
+    private static final float MOVEMENT_THRESHOLD = 2.0f;
     public MyServiceMotion() {
     }
 
@@ -49,10 +54,39 @@ public class MyServiceMotion extends Service implements SensorEventListener {
         float y = event.values[1];
         float z = event.values[2];
 
-        Log.d("MyServiceMotion","X: " + x + " Y: " + y + " Z: " + z
-                + " Thread: " + Thread.currentThread().getName());
-    }
+        if (firstReading) {
+            previousX = x;
+            previousY = y;
+            previousZ = z;
+            firstReading = false;
+            return;
+        }
 
+        float changeX = x - previousX;
+        float changeY = y - previousY;
+        float changeZ = z - previousZ;
+
+        double movement = Math.sqrt(
+                changeX * changeX +
+                        changeY * changeY +
+                        changeZ * changeZ
+        );
+
+        previousX = x;
+        previousY = y;
+        previousZ = z;
+
+        long now = event.timestamp / 1000000L;
+
+        if (movement > MOVEMENT_THRESHOLD &&
+                (lastMotionTime == 0 || now - lastMotionTime >= 3000)) {
+
+            lastMotionTime = now;
+
+            Log.d("MyServiceMotion", "Movement detected");
+        }
+    }
+    
     @Override
     public void onAccuracyChanged(Sensor sensor, int accuracy) {
         // No action needed for this lab.
