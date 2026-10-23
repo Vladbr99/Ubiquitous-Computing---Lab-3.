@@ -4,14 +4,27 @@ import android.app.Service;
 import android.content.Intent;
 import android.os.IBinder;
 import android.util.Log;
+import android.hardware.Sensor;
+import android.hardware.SensorManager;
 
 public class MyServiceMotion extends Service {
+    private SensorManager mSensorManager;
+    private Sensor mSensor;
     public MyServiceMotion() {
     }
 
     @Override
     public void onCreate() {
         super.onCreate();
+
+        mSensorManager = (SensorManager) getSystemService(SENSOR_SERVICE);
+        mSensor = mSensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
+
+        if (mSensor != null) {
+            Log.d("MyServiceMotion", "Accelerometer found");
+        } else {
+            Log.d("MyServiceMotion", "No accelerometer available");
+        }
 
         Thread backgroundThread = new Thread(new Runnable() {
             @Override
